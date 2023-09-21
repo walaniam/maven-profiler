@@ -1,15 +1,15 @@
 package fr.jcgay.maven.profiler.reporting.template;
 
-import com.google.common.base.Stopwatch;
-import org.eclipse.aether.artifact.Artifact;
+import static com.google.common.base.MoreObjects.firstNonNull;
 
+import com.google.common.base.Stopwatch;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import org.eclipse.aether.artifact.Artifact;
 
-import static com.google.common.base.Objects.firstNonNull;
 
 public class Data {
 

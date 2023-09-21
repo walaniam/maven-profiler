@@ -1,14 +1,12 @@
 package fr.jcgay.maven.profiler;
 
-import com.google.common.base.Stopwatch;
-import org.eclipse.aether.artifact.Artifact;
-
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import static com.google.common.base.Predicates.notNull;
 import static com.google.common.collect.Iterables.filter;
 import static fr.jcgay.maven.profiler.KnownElapsedTimeTicker.aStopWatchWithElapsedTime;
+
+import com.google.common.base.Stopwatch;
+import java.util.Map;
+import org.eclipse.aether.artifact.Artifact;
 
 public class ArtifactDescriptor {
 
@@ -29,7 +27,7 @@ public class ArtifactDescriptor {
     private static long totalTime(Map<Artifact, Stopwatch> times) {
         long totalTime = 0;
         for (Stopwatch stopwatch : filter(times.values(), notNull())) {
-            totalTime += stopwatch.elapsedTime(TimeUnit.NANOSECONDS);
+            totalTime += stopwatch.elapsed().toNanos();
         }
         return totalTime;
     }

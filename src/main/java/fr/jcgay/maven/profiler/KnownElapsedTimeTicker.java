@@ -13,7 +13,7 @@ public class KnownElapsedTimeTicker extends Ticker {
     }
 
     public static Stopwatch aStopWatchWithElapsedTime(long elapsedTime) {
-        return new Stopwatch(new KnownElapsedTimeTicker(elapsedTime)).start().stop();
+        return Stopwatch.createStarted(new KnownElapsedTimeTicker(elapsedTime)).stop();
     }
 
     @Override

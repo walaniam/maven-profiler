@@ -43,7 +43,7 @@ class ExecutionTimeSorterTest {
 
     @Test
     void 'should be a stopwatch with elapsed time'() throws Exception {
-        assertThat(new Stopwatch(new KnownElapsedTimeTicker(MINUTES.toNanos(1))).start().stop().elapsedTime(MINUTES)).isEqualTo(1)
+        assertThat(Stopwatch.createStarted(new KnownElapsedTimeTicker(MINUTES.toNanos(1))).stop().elapsed(MINUTES)).isEqualTo(1)
     }
 
     private static org.apache.maven.plugin.MojoExecution aMojoExecution(String id) {

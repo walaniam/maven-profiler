@@ -79,7 +79,7 @@ class ProfilerEventSpyTest {
 
         Stopwatch timer = result.row(event.getSession().getCurrentProject()).get(event.getMojoExecution())
         assertThat(timer.isRunning()).isFalse()
-        assertThat(timer.elapsedMillis()).isPositive()
+        assertThat(timer.elapsed().toMillis()).isPositive()
     }
 
     @DataProvider
@@ -105,7 +105,7 @@ class ProfilerEventSpyTest {
 
         def project = statistics.projects()[event.session.currentProject]
         assertThat(project.isRunning()).isFalse()
-        assertThat(project.elapsedMillis()).isPositive()
+        assertThat(project.elapsed().toMillis()).isPositive()
     }
 
     @DataProvider
@@ -135,7 +135,7 @@ class ProfilerEventSpyTest {
 
         def result = statistics.downloads()
         assertThat(result[event.artifact].isRunning()).isFalse()
-        assertThat(result[event.artifact].elapsedMillis()).isPositive()
+        assertThat(result[event.artifact].elapsed().toMillis()).isPositive()
     }
 
     @Test
@@ -185,7 +185,7 @@ class ProfilerEventSpyTest {
         verify(reporter).write(data.capture(), any(ReportDirectory))
 
         def result = data.value
-        assertThat(result.buildTime.elapsedMillis()).isEqualTo(finishTime.time - date(2017, JANUARY, 21).time)
+        assertThat(result.buildTime.elapsed().toMillis()).isEqualTo(finishTime.time - date(2017, JANUARY, 21).time)
     }
 
     private static Date date(int year, int month, int day) {

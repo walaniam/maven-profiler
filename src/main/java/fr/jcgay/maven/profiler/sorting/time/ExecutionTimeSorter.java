@@ -4,11 +4,10 @@ import com.google.common.base.Function;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Table;
-import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.project.MavenProject;
-
 import java.util.List;
 import java.util.Map;
+import org.apache.maven.plugin.MojoExecution;
+import org.apache.maven.project.MavenProject;
 
 class ExecutionTimeSorter {
 
@@ -32,7 +31,7 @@ class ExecutionTimeSorter {
     private static class StopWatchFunction implements Function<Map.Entry<MojoExecution, Stopwatch>, Long> {
         @Override
         public Long apply(Map.Entry<MojoExecution, Stopwatch> input) {
-            return input.getValue().elapsedMillis();
+            return input.getValue().elapsed().toMillis();
         }
 
         public static StopWatchFunction toElapsedTime() {

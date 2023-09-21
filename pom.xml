@@ -2,52 +2,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>fr.jcgay.maven</groupId>
-        <artifactId>jcgay-build-configuration</artifactId>
-        <version>1.19</version>
-    </parent>
-
-    <groupId>fr.jcgay.maven</groupId>
+    <groupId>walaniam</groupId>
     <artifactId>maven-profiler</artifactId>
-    <version>3.3-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <description>Log Maven mojos execution time</description>
 
-    <prerequisites>
-        <maven>3.0.4</maven>
-    </prerequisites>
-
-    <scm>
-        <url>https://github.com/jcgay/maven-profiler.git</url>
-        <connection>scm:git:git://github.com/jcgay/maven-profiler.git</connection>
-        <developerConnection>scm:git:git@github.com:jcgay/maven-profiler.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>2022-03-29T08:12:18Z</project.build.outputTimestamp>
-        <argLine>-Duser.country=US -Duser.language=en</argLine>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
-            <version>3.1.0</version>
+            <version>3.9.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>11.0.2</version>
+            <version>31.1-jre</version>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>
             <artifactId>handlebars</artifactId>
-            <version>4.3.0</version>
+            <version>4.3.1</version>
         </dependency>
         <dependency>
             <groupId>com.eclipsesource.minimal-json</groupId>
@@ -62,25 +44,25 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>7.5</version>
+            <version>7.7.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>4.3.1</version>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.22.0</version>
+            <version>3.24.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-guava</artifactId>
-            <version>1.0.0</version>
+            <version>3.24.2</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -92,13 +74,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.35</version>
+            <version>1.7.36</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>3.0.9</version>
+            <version>3.0.16</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -169,28 +151,28 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-invoker-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <projectsDirectory>src/it</projectsDirectory>
-                    <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                    <cloneClean>true</cloneClean>
-                    <showVersion>true</showVersion>
-                    <postBuildHookScript>verify.groovy</postBuildHookScript>
-                    <mavenOpts>${argLine}</mavenOpts>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>install</goal>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <artifactId>maven-invoker-plugin</artifactId>-->
+<!--                <version>3.2.2</version>-->
+<!--                <configuration>-->
+<!--                    <projectsDirectory>src/it</projectsDirectory>-->
+<!--                    <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>-->
+<!--                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>-->
+<!--                    <cloneClean>true</cloneClean>-->
+<!--                    <showVersion>true</showVersion>-->
+<!--                    <postBuildHookScript>verify.groovy</postBuildHookScript>-->
+<!--                    <mavenOpts>${argLine}</mavenOpts>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>integration-test</id>-->
+<!--                        <goals>-->
+<!--                            <goal>install</goal>-->
+<!--                            <goal>run</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.jreleaser</groupId>
                 <artifactId>jreleaser-maven-plugin</artifactId>
@@ -202,34 +184,34 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>build-with-toolchains</id>
-            <activation>
-                <jdk>!1.8</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-toolchains-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>toolchain</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <toolchains>
-                                <jdk>
-                                    <version>${maven.compiler.target}</version>
-                                </jdk>
-                            </toolchains>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            <id>build-with-toolchains</id>-->
+<!--            <activation>-->
+<!--                <jdk>!1.8</jdk>-->
+<!--            </activation>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <artifactId>maven-toolchains-plugin</artifactId>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <goals>-->
+<!--                                    <goal>toolchain</goal>-->
+<!--                                </goals>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                        <configuration>-->
+<!--                            <toolchains>-->
+<!--                                <jdk>-->
+<!--                                    <version>${maven.compiler.target}</version>-->
+<!--                                </jdk>-->
+<!--                            </toolchains>-->
+<!--                        </configuration>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--        </profile>-->
+<!--    </profiles>-->
 
 </project>

@@ -20,7 +20,7 @@ class ArtifactDescriptorTest {
 
         ArtifactDescriptor result = ArtifactDescriptor.instance(timers)
 
-        assertThat(result.getTotalTimeSpentDownloadingArtifacts().elapsedTime(SECONDS)).isEqualTo(6L)
+        assertThat(result.getTotalTimeSpentDownloadingArtifacts().elapsed(SECONDS)).isEqualTo(6L)
     }
 
     private static Artifact anArtifact(String artifactId) {

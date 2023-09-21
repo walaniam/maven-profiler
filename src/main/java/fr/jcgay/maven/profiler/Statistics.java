@@ -1,22 +1,21 @@
 package fr.jcgay.maven.profiler;
 
+import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableMap;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
-import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.project.MavenProject;
-import org.eclipse.aether.artifact.Artifact;
-import org.slf4j.Logger;
-
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-import static java.util.Collections.emptySet;
-import static java.util.Collections.unmodifiableMap;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.maven.plugin.MojoExecution;
+import org.apache.maven.project.MavenProject;
+import org.eclipse.aether.artifact.Artifact;
+import org.slf4j.Logger;
 
 public class Statistics {
 
@@ -78,20 +77,20 @@ public class Statistics {
 
     public synchronized Statistics startProject(MavenProject project) {
         LOGGER.debug("Starting timer for project: {}", project);
-        projects.put(project, new Stopwatch().start());
+        projects.put(project, Stopwatch.createStarted());
         return this;
     }
 
     public synchronized Statistics startDownload(Artifact artifact) {
         LOGGER.debug("Starting timer for artifact [{}]", artifact);
-        downloadTimers.put(ArtifactProfiled.of(artifact), new Stopwatch().start());
+        downloadTimers.put(ArtifactProfiled.of(artifact), Stopwatch.createStarted ());
         return this;
     }
 
     public synchronized Statistics startExecution(MavenProject project, MojoExecution execution) {
         LOGGER.debug("Starting timer for mojo [{}] in project [{}].", execution, project);
         Map<MojoExecution, Stopwatch> projectExecutions = executions.computeIfAbsent(project, k -> new LinkedHashMap<>());
-        projectExecutions.put(execution, new Stopwatch().start());
+        projectExecutions.put(execution, Stopwatch.createStarted());
         return this;
     }
 
