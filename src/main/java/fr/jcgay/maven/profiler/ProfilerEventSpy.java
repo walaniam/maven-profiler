@@ -1,5 +1,12 @@
 package fr.jcgay.maven.profiler;
 
+import static fr.jcgay.maven.profiler.KnownElapsedTimeTicker.aStopWatchWithElapsedTime;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.apache.maven.execution.ExecutionEvent.Type.ProjectDiscoveryStarted;
+import static org.apache.maven.execution.ExecutionEvent.Type.SessionStarted;
+import static org.eclipse.aether.RepositoryEvent.EventType.ARTIFACT_DOWNLOADED;
+import static org.eclipse.aether.RepositoryEvent.EventType.ARTIFACT_DOWNLOADING;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
@@ -8,6 +15,13 @@ import fr.jcgay.maven.profiler.reporting.template.Data;
 import fr.jcgay.maven.profiler.reporting.template.EntryAndTime;
 import fr.jcgay.maven.profiler.reporting.template.Project;
 import fr.jcgay.maven.profiler.sorting.Sorter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Supplier;
 import org.apache.maven.eventspy.AbstractEventSpy;
 import org.apache.maven.eventspy.EventSpy;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
@@ -20,21 +34,8 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.eclipse.aether.RepositoryEvent;
 import org.eclipse.aether.artifact.Artifact;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Supplier;
-
-import static fr.jcgay.maven.profiler.KnownElapsedTimeTicker.aStopWatchWithElapsedTime;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.apache.maven.execution.ExecutionEvent.Type.ProjectDiscoveryStarted;
-import static org.apache.maven.execution.ExecutionEvent.Type.SessionStarted;
-import static org.eclipse.aether.RepositoryEvent.EventType.ARTIFACT_DOWNLOADED;
-import static org.eclipse.aether.RepositoryEvent.EventType.ARTIFACT_DOWNLOADING;
+import org.eclipse.aether.repository.ArtifactRepository;
+import org.eclipse.aether.repository.RemoteRepository;
 
 @Component(role = EventSpy.class, hint = "profiler", description = "Measure times taken by Maven.")
 public class ProfilerEventSpy extends AbstractEventSpy {
@@ -42,7 +43,6 @@ public class ProfilerEventSpy extends AbstractEventSpy {
     private final Supplier<Statistics> statisticsSupplier;
     private final Supplier<Configuration> configurationSupplier;
     private final Supplier<Date> now;
-
     private Configuration configuration;
     private Statistics statistics;
 
@@ -164,6 +164,11 @@ public class ProfilerEventSpy extends AbstractEventSpy {
         } else if (event.getType() == ARTIFACT_DOWNLOADED) {
             if (hasNoException(event)) {
                 statistics.stopDownload(event.getArtifact());
+                ArtifactRepository repository = event.getRepository();
+                if (repository instanceof RemoteRepository) {
+                    var remoteRepository = (RemoteRepository) repository;
+                    statistics.downloadedFrom(event.getArtifact(), remoteRepository.getUrl());
+                }
             }
         }
     }

@@ -1,5 +1,13 @@
 package fr.jcgay.maven.profiler;
 
+import static com.google.common.base.Functions.compose;
+import static com.google.common.base.Functions.forMap;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Collections2.transform;
+import static java.util.Arrays.asList;
+
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import fr.jcgay.maven.profiler.reporting.CompositeReporter;
 import fr.jcgay.maven.profiler.reporting.Reporter;
 import fr.jcgay.maven.profiler.reporting.console.ConsoleReporter;
@@ -8,16 +16,7 @@ import fr.jcgay.maven.profiler.reporting.json.JsonReporter;
 import fr.jcgay.maven.profiler.sorting.Sorter;
 import fr.jcgay.maven.profiler.sorting.execution.ByExecutionOrder;
 import fr.jcgay.maven.profiler.sorting.time.ByExecutionTime;
-
-import static com.google.common.base.Functions.compose;
-import static com.google.common.base.Functions.forMap;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Collections2.transform;
-import static java.util.Arrays.asList;
-
 import java.util.List;
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
 
 public class Configuration {
 
@@ -26,11 +25,11 @@ public class Configuration {
     private static final String DISABLE_TIME_SORTING = "disableTimeSorting";
     private static final String DISABLE_PARAMETERS_REPORT = "hideParameters";
 
-    private static final Function<String,Reporter> reporters =  compose(forMap(ImmutableMap.<String,Reporter>builder()
-    		.put("html", new HtmlReporter())
-    		.put("json", new JsonReporter())
-    		.put("console", new ConsoleReporter())
-    		.build()), String::toLowerCase);
+    private static final Function<String, Reporter> reporters = compose(forMap(ImmutableMap.<String, Reporter>builder()
+        .put("html", new HtmlReporter())
+        .put("json", new JsonReporter())
+        .put("console", new ConsoleReporter())
+        .build()), String::toLowerCase);
 
     private final boolean isProfiling;
     private final String profileName;
@@ -38,7 +37,8 @@ public class Configuration {
     private final Sorter sorter;
     private final boolean shouldPrintParameters;
 
-    public Configuration(boolean isProfiling, String profileName, Reporter reporter, Sorter sorter, boolean shouldPrintParameters) {
+    public Configuration(boolean isProfiling, String profileName, Reporter reporter, Sorter sorter,
+        boolean shouldPrintParameters) {
         this.isProfiling = isProfiling;
         this.profileName = checkNotNull(profileName);
         this.reporter = reporter;
@@ -47,14 +47,17 @@ public class Configuration {
     }
 
     public static Configuration read() {
-        return new Configuration(isActive(), getProfileName(), chooseReporter(), chooseSorter(), hasParametersReportEnabled());
+        return new Configuration(isActive(), getProfileName(), chooseReporter(), chooseSorter(),
+            hasParametersReportEnabled());
     }
 
     public boolean isProfiling() {
         return isProfiling;
     }
 
-    /** Returns the profile name. Never {@code null}, may be empty if not provided. */
+    /**
+     * Returns the profile name. Never {@code null}, may be empty if not provided.
+     */
     public String profileName() {
         return profileName;
     }

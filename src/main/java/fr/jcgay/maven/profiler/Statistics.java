@@ -24,6 +24,7 @@ public class Statistics {
     private final Map<MavenProject, Stopwatch> projects = new LinkedHashMap<>();
     private final Map<MavenProject, Map<MojoExecution, Stopwatch>> executions = new LinkedHashMap<>();
     private final Map<Artifact, Stopwatch> downloadTimers = new LinkedHashMap<>();
+    private final Map<Artifact, String> downloadUrls = new LinkedHashMap<>();
 
     private MavenProject topProject;
     private Set<String> goals = emptySet();
@@ -73,6 +74,10 @@ public class Statistics {
 
     public Map<Artifact, Stopwatch> downloads() {
         return unmodifiableMap(downloadTimers);
+    }
+
+    public synchronized void downloadedFrom(Artifact artifact, String repositoryUrl) {
+        downloadUrls.put(artifact, repositoryUrl);
     }
 
     public synchronized Statistics startProject(MavenProject project) {
