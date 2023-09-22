@@ -66,7 +66,7 @@ class ConsoleReporterTest {
         new ConsoleReporter()
             .write(data, null)
 
-        assertThat(outContent.toString()).contains("""
+        assertThat(outContent.toString()).isEqualToIgnoringNewLines("""
 ╒══════════════════════════════════════════════════════════════════════════════════════════════════════════╕
 │ maven-profiler (5.700 μs)                                                                                │
 ├──────────────────────────────────────────────────────────────────────────────────────────────────────────┤
