@@ -1,12 +1,12 @@
 package fr.jcgay.maven.profiler.reporting;
 
-import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import static org.slf4j.LoggerFactory.getLogger;
+import java.util.Optional;
+import org.slf4j.Logger;
 
 public final class Files {
 
@@ -21,5 +21,12 @@ public final class Files {
         } catch (IOException e) {
             LOGGER.error("Cannot write profiler report.", e);
         }
+    }
+
+    public static long sizeInKb(File file) {
+        return Optional.ofNullable(file)
+            .map(File::length)
+            .map(it -> it / 1024)
+            .orElse(-1L);
     }
 }

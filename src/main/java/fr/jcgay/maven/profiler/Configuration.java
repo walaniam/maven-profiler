@@ -86,7 +86,7 @@ public class Configuration {
     }
 
     private static Reporter chooseReporter() {
-        List<String> formats = asList(System.getProperty(PROFILE_FORMAT, "html").split(","));
+        List<String> formats = asList(System.getProperty(PROFILE_FORMAT, "html,console").split(","));
         return new CompositeReporter(transform(formats, reporters));
     }
 

@@ -1,6 +1,6 @@
 package fr.jcgay.maven.profiler
 
-
+import fr.jcgay.maven.profiler.reporting.console.ConsoleReporter
 import fr.jcgay.maven.profiler.reporting.html.HtmlReporter
 import fr.jcgay.maven.profiler.reporting.json.JsonReporter
 import fr.jcgay.maven.profiler.sorting.execution.ByExecutionOrder
@@ -105,7 +105,7 @@ class ConfigurationTest {
 
         assertThat(result.isProfiling()).isFalse()
         assertThat(result.profileName()).isEmpty()
-        assertThat(result.reporter().delegates).extracting("class").containsExactly(HtmlReporter)
+        assertThat(result.reporter().delegates).extracting("class").contains(HtmlReporter, ConsoleReporter)
         assertThat(result.sorter()).isExactlyInstanceOf(ByExecutionTime)
     }
 }

@@ -10,6 +10,7 @@ import static org.eclipse.aether.RepositoryEvent.EventType.ARTIFACT_DOWNLOADING;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
+import fr.jcgay.maven.profiler.reporting.Files;
 import fr.jcgay.maven.profiler.reporting.ReportDirectory;
 import fr.jcgay.maven.profiler.reporting.template.Data;
 import fr.jcgay.maven.profiler.reporting.template.EntryAndTime;
@@ -79,18 +80,17 @@ public class ProfilerEventSpy extends AbstractEventSpy {
     public void onEvent(Object event) throws Exception {
         super.onEvent(event);
         if (configuration.isProfiling()) {
-            if (event instanceof DefaultMavenExecutionRequest) {
-                DefaultMavenExecutionRequest mavenEvent = (DefaultMavenExecutionRequest) event;
+            if (event instanceof DefaultMavenExecutionRequest mavenEvent) {
                 statistics.setGoals(new LinkedHashSet<>(mavenEvent.getGoals()));
                 if (configuration.shouldPrintParameters()) {
                     statistics.setProperties(mavenEvent.getUserProperties());
                 }
-            } else if (event instanceof ExecutionEvent) {
-                storeExecutionEvent((ExecutionEvent) event);
-                trySaveTopProject((ExecutionEvent) event);
-                storeStartTime((ExecutionEvent) event);
-            } else if (event instanceof RepositoryEvent) {
-                storeDownloadingArtifacts((RepositoryEvent) event);
+            } else if (event instanceof ExecutionEvent executionEvent) {
+                storeExecutionEvent(executionEvent);
+                trySaveTopProject(executionEvent);
+                storeStartTime(executionEvent);
+            } else if (event instanceof RepositoryEvent repositoryEvent) {
+                storeDownloadingArtifacts(repositoryEvent);
             }
         }
     }
@@ -105,7 +105,9 @@ public class ProfilerEventSpy extends AbstractEventSpy {
     public void close() throws Exception {
         super.close();
         if (configuration.isProfiling()) {
+
             Date finishTime = now.get();
+
             Data context = new Data()
                 .setProjects(sortedProjects())
                 .setDate(finishTime)
@@ -113,10 +115,26 @@ public class ProfilerEventSpy extends AbstractEventSpy {
                 .setProfileName(configuration.profileName())
                 .setGoals(Joiner.on(' ').join(statistics.goals()))
                 .setParameters(statistics.properties());
-            setDownloads(context);
+
+            Map<Artifact, Stopwatch> downloadedArtifacts = statistics.downloads();
+            Map<Artifact, String> downloadedFrom = statistics.downloadedFrom();
+
+            List<EntryAndTime<Artifact>> entries = new ArrayList<>();
+            for (Artifact artifact : configuration.sorter().downloads(downloadedArtifacts)) {
+                EntryAndTime<Artifact> entry = new EntryAndTime<>(artifact, downloadedArtifacts.get(artifact));
+                entry.setSizeKb(Files.sizeInKb(artifact.getFile()));
+                entry.setRepoUrl(downloadedFrom.get(artifact));
+                entries.add(entry);
+            }
+
+            context
+                .setDownloads(entries)
+                .setTotalDownloadTime(
+                    ArtifactDescriptor.instance(downloadedArtifacts).getTotalTimeSpentDownloadingArtifacts());
 
             if (statistics.getStartTime() != null) {
-                context.setBuildTime(aStopWatchWithElapsedTime(MILLISECONDS.toNanos(finishTime.getTime() - statistics.getStartTime().getTime())));
+                context.setBuildTime(aStopWatchWithElapsedTime(
+                    MILLISECONDS.toNanos(finishTime.getTime() - statistics.getStartTime().getTime())));
             }
 
             configuration.reporter().write(context, new ReportDirectory(statistics.topProject()));
@@ -144,18 +162,6 @@ public class ProfilerEventSpy extends AbstractEventSpy {
         return result;
     }
 
-    private void setDownloads(Data data) {
-        Map<Artifact, Stopwatch> downloadedArtifacts = statistics.downloads();
-
-        List<EntryAndTime<Artifact>> result = new ArrayList<>();
-        for (Artifact artifact : configuration.sorter().downloads(downloadedArtifacts)) {
-            result.add(new EntryAndTime<>(artifact, downloadedArtifacts.get(artifact)));
-        }
-
-        data.setDownloads(result)
-            .setTotalDownloadTime(ArtifactDescriptor.instance(downloadedArtifacts).getTotalTimeSpentDownloadingArtifacts());
-    }
-
     private void storeDownloadingArtifacts(RepositoryEvent event) {
         logger.debug(String.format("Received event (%s): %s", event.getClass(), event));
         if (event.getType() == ARTIFACT_DOWNLOADING) {
@@ -165,8 +171,7 @@ public class ProfilerEventSpy extends AbstractEventSpy {
             if (hasNoException(event)) {
                 statistics.stopDownload(event.getArtifact());
                 ArtifactRepository repository = event.getRepository();
-                if (repository instanceof RemoteRepository) {
-                    var remoteRepository = (RemoteRepository) repository;
+                if (repository instanceof RemoteRepository remoteRepository) {
                     statistics.downloadedFrom(event.getArtifact(), remoteRepository.getUrl());
                 }
             }

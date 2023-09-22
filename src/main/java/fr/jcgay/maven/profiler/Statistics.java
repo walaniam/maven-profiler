@@ -76,6 +76,10 @@ public class Statistics {
         return unmodifiableMap(downloadTimers);
     }
 
+    public Map<Artifact, String> downloadedFrom() {
+        return unmodifiableMap(downloadUrls);
+    }
+
     public synchronized void downloadedFrom(Artifact artifact, String repositoryUrl) {
         downloadUrls.put(artifact, repositoryUrl);
     }

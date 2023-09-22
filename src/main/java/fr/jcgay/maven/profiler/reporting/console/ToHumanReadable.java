@@ -1,13 +1,12 @@
 package fr.jcgay.maven.profiler.reporting.console;
 
 import com.google.common.base.Function;
-import de.vandermeer.asciitable.v2.RenderedTable;
 import de.vandermeer.asciitable.v2.V2_AsciiTable;
 import de.vandermeer.asciitable.v2.render.V2_AsciiTableRenderer;
 import de.vandermeer.asciitable.v2.render.WidthLongestLine;
 import de.vandermeer.asciitable.v2.themes.V2_E_TableThemes;
 import fr.jcgay.maven.profiler.reporting.template.Data;
-
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 public enum ToHumanReadable implements Function<Data, String> {
@@ -15,11 +14,24 @@ public enum ToHumanReadable implements Function<Data, String> {
 
     @Override
     public String apply(@Nullable Data data) {
-        final V2_AsciiTable at = new V2_AsciiTable();
-        V2_AsciiTableRenderer renderer = new V2_AsciiTableRenderer();
-        renderer.setTheme(V2_E_TableThemes.UTF_STRONG_DOUBLE.get());
 
-        renderer.setWidth(new WidthLongestLine().add(50, 100));
+        V2_AsciiTableRenderer renderer = newRenderer();
+        var builder = new StringBuilder();
+
+        V2_AsciiTable executionsTable = buildMojoExecutionsTable(data);
+        builder.append(renderer.render(executionsTable).toString());
+
+        V2_AsciiTable downloadsTable = buildDownloadsTable(data);
+        builder.append("\n");
+        builder.append(renderer.render(downloadsTable).toString());
+
+        return builder.toString().trim() + "\n";
+    }
+
+    private V2_AsciiTable buildMojoExecutionsTable(Data data) {
+
+        final V2_AsciiTable at = new V2_AsciiTable();
+
         at.addStrongRule();
         at.addRow(null, String.format("%s (%s)", data.getTopProjectName(), data.getBuildTime()));
         at.addRule();
@@ -38,20 +50,43 @@ public enum ToHumanReadable implements Function<Data, String> {
                 });
             }
         });
-        if (data.isDownloadSectionDisplayed()) {
-            at.addStrongRule();
-            at.addRow(null, String.format("Artifact Downloading %s", data.getTotalDownloadTime()));
-            at.addRule();
-            at.addRow("Artifact", "Duration");
 
-            data.getDownloads().forEach(download -> {
-                at.addRule();
-                at.addRow(download.getEntry(), download.getTime());
-            });
-        }
         at.addStrongRule();
 
-        RenderedTable renderedTable = renderer.render(at);
-        return renderedTable.toString();
+        return at;
+    }
+
+    private V2_AsciiTable buildDownloadsTable(Data data) {
+
+        final V2_AsciiTable at = new V2_AsciiTable();
+
+        at.addStrongRule();
+        at.addRow(null, null, null, String.format("Artifact downloads"));
+        at.addRule();
+        at.addRow("Repository", "Artifact", "Duration", "Size (kB)");
+        at.addStrongRule();
+
+        if (data.isDownloadSectionDisplayed()) {
+            data.getDownloads().forEach(download -> {
+                at.addRule();
+                at.addRow(
+                    Optional.ofNullable(download.getRepoUrl()).orElse("-"),
+                    download.getEntry(),
+                    download.getTime(),
+                    download.getSizeKb()
+                );
+            });
+        }
+
+        at.addStrongRule();
+
+        return at;
+    }
+
+    private V2_AsciiTableRenderer newRenderer() {
+        V2_AsciiTableRenderer renderer = new V2_AsciiTableRenderer();
+        renderer.setTheme(V2_E_TableThemes.UTF_STRONG_DOUBLE.get());
+        renderer.setWidth(new WidthLongestLine().add(50, 100));
+        return renderer;
     }
 }

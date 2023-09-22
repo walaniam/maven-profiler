@@ -1,17 +1,16 @@
 package fr.jcgay.maven.profiler.reporting.html;
 
+import static fr.jcgay.maven.profiler.reporting.ReportFormat.HTML;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import com.github.jknack.handlebars.Handlebars;
 import fr.jcgay.maven.profiler.reporting.Files;
 import fr.jcgay.maven.profiler.reporting.ReportDirectory;
 import fr.jcgay.maven.profiler.reporting.Reporter;
 import fr.jcgay.maven.profiler.reporting.template.Data;
-import org.slf4j.Logger;
-
 import java.io.File;
 import java.io.IOException;
-
-import static fr.jcgay.maven.profiler.reporting.ReportFormat.HTML;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.slf4j.Logger;
 
 public class HtmlReporter implements Reporter {
 

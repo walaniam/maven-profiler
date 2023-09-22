@@ -1,7 +1,6 @@
 package fr.jcgay.maven.profiler.reporting;
 
 import fr.jcgay.maven.profiler.reporting.template.Data;
-
 import java.util.Collection;
 
 public final class CompositeReporter implements Reporter {
