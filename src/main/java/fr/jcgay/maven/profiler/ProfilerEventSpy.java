@@ -117,13 +117,13 @@ public class ProfilerEventSpy extends AbstractEventSpy {
                 .setParameters(statistics.properties());
 
             Map<Artifact, Stopwatch> downloadedArtifacts = statistics.downloads();
-            Map<Artifact, String> downloadedFrom = statistics.downloadedFrom();
+            Map<ArtifactId, String> downloadedFrom = statistics.downloadedFrom();
 
             List<EntryAndTime<Artifact>> entries = new ArrayList<>();
             for (Artifact artifact : configuration.sorter().downloads(downloadedArtifacts)) {
                 EntryAndTime<Artifact> entry = new EntryAndTime<>(artifact, downloadedArtifacts.get(artifact));
                 entry.setSizeKb(Files.sizeInKb(artifact.getFile()));
-                entry.setRepoUrl(downloadedFrom.get(artifact));
+                entry.setRepoUrl(downloadedFrom.get(new ArtifactId(artifact)));
                 entries.add(entry);
             }
 

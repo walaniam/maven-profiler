@@ -1,13 +1,12 @@
 package fr.jcgay.maven.profiler;
 
-import com.google.common.base.Objects;
-import org.eclipse.aether.artifact.Artifact;
-
-import java.io.File;
-import java.util.Map;
-
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.common.base.Objects;
+import java.io.File;
+import java.util.Map;
+import org.eclipse.aether.artifact.Artifact;
 
 public class ArtifactProfiled implements Artifact {
 
